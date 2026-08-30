@@ -1,3 +1,5 @@
+
+
 # Filament Infinite Scroll v3
 
 **Filament Infinite Scroll** is a lightweight plugin that replaces the standard Filament **v3** table pagination with a fluid, auto-loading infinite scroll mechanism. It is compatible with all tables, including Resources, Relation Managers, Widgets, and standalone Table Builders.
@@ -26,7 +28,7 @@ As the user approaches the end of a list, more rows are fetched transparently vi
 
 | Package     | Version        |
 |-------------|----------------|
-| PHP         | **8.1+**       |
+| PHP         | **8.2+**       |
 | Laravel     | **10 or 11**   |
 | Filament    | **3.0+**       |
 | Livewire    | Ships with Filament |
