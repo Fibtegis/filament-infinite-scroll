@@ -1,0 +1,54 @@
+name: Bug report
+description: Something does not work as described.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to report a bug. Please fill in the details below so we can reproduce it.
+  - type: input
+    id: package-version
+    attributes:
+      label: Package version
+      placeholder: e.g. 2.0.0 or dev-main
+    validations:
+      required: true
+  - type: input
+    id: filament-version
+    attributes:
+      label: Filament version
+      description: Output of `composer show filament/filament | grep versions`
+      placeholder: e.g. v5.11.0
+    validations:
+      required: true
+  - type: input
+    id: laravel-version
+    attributes:
+      label: Laravel and PHP versions
+      placeholder: e.g. Laravel 13.2, PHP 8.4
+    validations:
+      required: true
+  - type: dropdown
+    id: table-type
+    attributes:
+      label: Where is the table?
+      multiple: true
+      options:
+        - Resource list page (ListRecords)
+        - Relation manager
+        - Table widget
+        - Standalone table (custom Livewire component)
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead? Include error messages and browser console output.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce
+      description: The smallest table definition and steps that show the problem.
+      render: php
+    validations:
+      required: true
