@@ -1,8 +1,19 @@
 {
     "name": "fibtegis/filament-infinite-scroll",
     "description": "Seamless infinite scrolling plugin that replaces pagination in Filament Tables.",
-    "keywords": ["filament", "tables", "infinite-scroll", "lazy-loading", "fibtegis", "pagination"],
-    "homepage": "https://github.com/fibtegis/filament-infinite-scroll",
+    "keywords": [
+        "filament",
+        "tables",
+        "infinite-scroll",
+        "lazy-loading",
+        "fibtegis",
+        "pagination"
+    ],
+    "homepage": "https://github.com/Fibtegis/filament-infinite-scroll",
+    "support": {
+        "issues": "https://github.com/Fibtegis/filament-infinite-scroll/issues",
+        "source": "https://github.com/Fibtegis/filament-infinite-scroll"
+    },
     "license": "Apache-2.0",
     "authors": [
         {
@@ -13,17 +24,15 @@
     ],
     "require": {
         "php": "^8.2",
-        "filament/filament": "^3.2.118|^4.0",
-        "illuminate/contracts": "^10.45|^11.0|^12.0",
-        "spatie/eloquent-sortable": "^4.0",
+        "filament/filament": "^3.2.118|^4.0|^5.0",
+        "illuminate/contracts": "^11.0|^12.0|^13.0",
         "spatie/laravel-package-tools": "^1.13.5"
     },
     "require-dev": {
         "laravel/pint": "^1.0",
-        "nunomaduro/collision": "^7.0|^8.1",
-        "orchestra/testbench": "^8.0|^9.0|^10.0|^11.0",
-        "phpunit/phpunit": "^10.0|^11.5.3",
-        "spatie/laravel-ray": "^1.26"
+        "nunomaduro/collision": "^8.1",
+        "orchestra/testbench": "^9.0|^10.0|^11.0",
+        "phpunit/phpunit": "^11.5.3|^12.0"
     },
     "autoload": {
         "psr-4": {
@@ -32,14 +41,19 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "Fibtegis\\FilamentInfiniteScroll\\Tests\\": "tests"
         }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "format": "pint",
+        "lint": "pint --test"
     },
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "composer/package-versions-deprecated": true,
-            "pestphp/pest-plugin": true,
-            "phpstan/extension-installer": true
+            "pestphp/pest-plugin": false,
+            "phpstan/extension-installer": false
         }
     },
     "extra": {
