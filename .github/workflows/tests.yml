@@ -38,7 +38,7 @@ jobs:
           - { filament: '3', laravel: '12', testbench: '10', php: '8.2' }
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
