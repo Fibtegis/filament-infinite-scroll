@@ -2,7 +2,7 @@
 
 All notable changes to `filament-infinite-scroll` will be documented in this file.
 
-## Unreleased (planned 2.0.0)
+## 2.0.0 - Unreleased
 
 ### Added
 - **Filament v5 support.** Filament v4 and v5 share the same table code, so both use the same assets.
