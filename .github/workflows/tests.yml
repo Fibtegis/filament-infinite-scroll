@@ -1,0 +1,64 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Filament ${{ matrix.filament }} / Laravel ${{ matrix.laravel }} / PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Laravel 10 and 11 are end of life; Composer refuses to install them
+        # because of unpatched security advisories, so CI covers 12 and 13.
+        include:
+          # Filament 5 (Livewire 4)
+          - { filament: '5', laravel: '13', testbench: '11', php: '8.4' }
+          - { filament: '5', laravel: '13', testbench: '11', php: '8.3' }
+          - { filament: '5', laravel: '12', testbench: '10', php: '8.2' }
+          # Filament 4 (Livewire 3)
+          - { filament: '4', laravel: '13', testbench: '11', php: '8.4' }
+          - { filament: '4', laravel: '12', testbench: '10', php: '8.3' }
+          - { filament: '4', laravel: '12', testbench: '10', php: '8.2' }
+          # Filament 3 (legacy)
+          - { filament: '3', laravel: '13', testbench: '11', php: '8.3' }
+          - { filament: '3', laravel: '12', testbench: '10', php: '8.2' }
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: intl, pdo_sqlite, zip
+          coverage: none
+
+      - name: Install dependencies
+        run: |
+          composer require --no-update --no-interaction \
+            "filament/filament:^${{ matrix.filament }}.0" \
+            "laravel/framework:^${{ matrix.laravel }}.0" \
+            "orchestra/testbench:^${{ matrix.testbench }}.0"
+          composer update --prefer-dist --no-interaction --no-progress
+
+      - name: Show installed versions
+        run: |
+          for package in filament/filament livewire/livewire laravel/framework; do
+            composer show "$package" | grep -E '^(name|versions)'
+          done
+
+      - name: Run tests
+        run: vendor/bin/phpunit
