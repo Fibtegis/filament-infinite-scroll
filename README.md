@@ -1,10 +1,15 @@
-# Filament Infinite Scroll v3
+# Filament Infinite Scroll
 
-**Filament Infinite Scroll** is a lightweight plugin that replaces the standard Filament **v3** table pagination with a fluid, auto-loading infinite scroll mechanism. It is compatible with all tables, including Resources, Relation Managers, Widgets, and standalone Table Builders.
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/fibtegis/filament-infinite-scroll.svg?style=flat-square)](https://packagist.org/packages/fibtegis/filament-infinite-scroll)
+[![Tests](https://img.shields.io/github/actions/workflow/status/Fibtegis/filament-infinite-scroll/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/Fibtegis/filament-infinite-scroll/actions/workflows/tests.yml)
+[![Total Downloads](https://img.shields.io/packagist/dt/fibtegis/filament-infinite-scroll.svg?style=flat-square)](https://packagist.org/packages/fibtegis/filament-infinite-scroll)
+[![License](https://img.shields.io/github/license/Fibtegis/filament-infinite-scroll?style=flat-square)](LICENSE)
+
+**Filament Infinite Scroll** is a lightweight plugin that replaces the standard Filament table pagination with a fluid, auto-loading infinite scroll mechanism. It works with **Filament v3.2+, v4 and v5** from the same release.
 
 As the user approaches the end of a list, more rows are fetched transparently via Livewire, preserving filters, search, and sorting.
 
-> Developed and maintained by **Fibtegis Yazılım Proje ve Danışmanık Hizmetleri LTD. ŞTİ.**
+> Developed and maintained by **Fibtegis Yazılım Proje ve Danışmanlık Hizmetleri LTD. ŞTİ.**
 > https://fbt.gs
 
 ---
@@ -26,11 +31,18 @@ As the user approaches the end of a list, more rows are fetched transparently vi
 
 | Package     | Version        |
 |-------------|----------------|
-| PHP         | **8.1+**       |
-| Laravel     | **10 or 11**   |
-| Filament    | **3.0+**       |
-| Livewire    | Ships with Filament |
+| PHP         | **8.2+**       |
+| Laravel     | **12 or 13** (11 is allowed but end of life and not tested) |
+| Filament    | **3.2+, 4.x or 5.x** |
+| Livewire    | Ships with Filament (v3 for Filament 3/4, v4 for Filament 5) |
 | Alpine.js   | Ships with Filament |
+
+### Where it works
+
+| Table type | Status |
+|------------|--------|
+| Resource list pages (`ListRecords`) | ✅ Supported |
+| Relation managers, table widgets, standalone Livewire tables | 🚧 Not yet: the query is limited but the loader is only rendered on list pages. Tracked for the next release. |
 
 ---
 
@@ -57,7 +69,7 @@ The plugin is auto-discovered by Filament. No manual registration is needed.
 Enabling infinite scroll is just a two-step process:
 
 1.  **Use the Trait:**
-    Add the `InteractsWithInfiniteScroll` trait to your respective `ListRecords` page, relation manager, or table widget.
+    Add the `InteractsWithInfiniteScroll` trait to your resource's `ListRecords` page.
 
     ```php
     // app/Filament/Resources/CustomerResource/Pages/ListCustomers.php
@@ -121,7 +133,7 @@ The `infinite()` method accepts a parameter to define the number of records to l
 ## How It Works
 
 *   A `Table::mixin` adds the `->infinite()` method. This method disables native pagination and limits the query based on the current page.
-*   The `InteractsWithInfiniteScroll` **Trait** tracks the current `$page` number and whether all records have been loaded (`$infiniteEnded`).
+*   The `InteractsWithInfiniteScroll` **Trait** tracks the current `$page` number and whether all records have been loaded (`$infiniteEnded`). It uses a Livewire lifecycle hook (`renderingInteractsWithInfiniteScroll`) to start again from the first batch when search, filters, sorting or grouping change, so it does not override any Filament method.
 *   An **Alpine.js** component uses an `IntersectionObserver` to detect when the end of the page is reached.
 *   When the end of the page is reached, the `loadMore()` method is triggered via Livewire.
 *   On initial page load, Alpine.js calculates the maximum height of the table container **once** and injects this style into the page's `<head>` tag. This ensures the style is permanent and unaffected by Livewire updates.
@@ -143,46 +155,28 @@ If you find this plugin useful and would like to support its future development,
 
 Published under the Apache-2.0 License. See the `LICENSE` file for details.
 
-&copy; 2025 **Fibtegis Yazılım Proje ve Danışmanık Hizmetleri LTD. ŞTİ.**
+&copy; 2025 **Fibtegis Yazılım Proje ve Danışmanlık Hizmetleri LTD. ŞTİ.**
 
 ---
 
-## ⚠️ Trait Collision: InteractsWithInfiniteScroll vs AdvancedTables
+## Upgrading from 1.x
 
-If you're using both `InteractsWithInfiniteScroll` and `AdvancedTables` traits in the same class (such as `ListRecords`), method name collisions like `updatedTableFilters`, `updatedTableSearch`, and `updatedTableSortColumn` may occur.
+*   Version 2 no longer overrides `updatedTableFilters`, `updatedTableSearch`, `updatedTableSortColumn`, `updatedTableSortDirection` or `resetTableFilters`. If you added an alias block to combine this trait with another plugin (such as Advanced Tables), **remove the `InteractsWithInfiniteScroll::...` aliases and the wrapper methods**; the traits no longer collide.
+*   `->infinite(perPage: 50)` now works as documented. In 1.x the value was ignored and 25 rows were always loaded.
 
-To resolve this, explicitly alias the methods and define a custom implementation that calls both versions:
+---
 
-```php
-use InteractsWithInfiniteScroll, AdvancedTables {
-    InteractsWithInfiniteScroll::updatedTableFilters as infiniteUpdatedTableFilters;
-    InteractsWithInfiniteScroll::updatedTableSearch as infiniteUpdatedTableSearch;
-    InteractsWithInfiniteScroll::updatedTableSortColumn as infiniteUpdatedTableSortColumn;
-    AdvancedTables::updatedTableFilters as advancedUpdatedTableFilters;
-    AdvancedTables::updatedTableSearch as advancedUpdatedTableSearch;
-    AdvancedTables::updatedTableSortColumn as advancedUpdatedTableSortColumn;
-}
+## Testing
 
-public function updatedTableFilters(): void
-{
-    $this->infiniteUpdatedTableFilters();
-    $this->advancedUpdatedTableFilters();
-}
-
-public function updatedTableSearch(): void
-{
-    $this->infiniteUpdatedTableSearch();
-    $this->advancedUpdatedTableSearch();
-}
-
-public function updatedTableSortColumn(): void
-{
-    $this->infiniteUpdatedTableSortColumn();
-    $this->advancedUpdatedTableSortColumn();
-}
+```bash
+composer test
 ```
 
-This ensures both plugins work together without conflict.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for running the suite against a specific Filament version.
+
+## Contributing & Security
+
+Contributions are welcome, see [CONTRIBUTING.md](CONTRIBUTING.md). Please report security issues privately as described in [SECURITY.md](SECURITY.md).
 
 ## Contributors ✨
 
